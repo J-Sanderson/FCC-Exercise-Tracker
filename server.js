@@ -1,12 +1,23 @@
-// server.js
-// where your node app starts
-
 // init project
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var shortid = require('shortid');
 
-// we've started you off with Express, 
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
+var urlencodedParser = bodyParser.urlencoded({extended: false});
+
+//db stuff
+mongoose.connect(process.env.DB);
+
+var userSchema = new mongoose.Schema({
+  _id: {
+    'type': String,
+    'default': shortid.generate
+  },
+  username: String
+});
+var User = mongoose.model('User', userSchema);
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
@@ -20,8 +31,24 @@ app.get('/api/exercise/log', function(req, res) {
   res.send("This will be the endpoint for the exercise log.");
 })
 
-app.post('/api/exercise/new-user', function(req, res) {
-  console.log("This will be the endpoint for the user creation route.");
+app.post('/api/exercise/new-user', urlencodedParser, function(req, res) {
+  var username = Object.keys(req.body)[0];
+  //does the user already exist?
+  User.find({username: username}, function(err, data) {
+    if (err) throw err;
+    if (data.length < 1) { //user does not exist
+      var newUser = new User({username: username}).save().then(function(data) {
+        //res.send("saved");
+      });
+    } else { //username taken
+      console.log("this user already exists!");
+    }
+  });
+  //console.log("This will be the endpoint for the user creation route.");
+});
+
+app.get('/api/exercise/new-user', function(req, res) {
+  console.log("test get request");
 });
 
 app.post('/api/exercise/add', function(req, res) {
