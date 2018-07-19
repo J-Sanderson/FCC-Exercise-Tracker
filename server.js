@@ -8,7 +8,7 @@ var shortid = require('shortid');
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 //db stuff
-mongoose.connect(process.env.DB);
+mongoose.connect(process.env.DB, { useNewUrlParser: true });
 
 var userSchema = new mongoose.Schema({
   _id: {
@@ -31,20 +31,23 @@ app.get('/api/exercise/log', function(req, res) {
   res.send("This will be the endpoint for the exercise log.");
 })
 
-app.post('/api/exercise/new-user', urlencodedParser, function(req, res) {
+app.post('/api/exercise/new-user', urlencodedParser, function(req, res, next) {
+  
   var username = Object.keys(req.body)[0];
   //does the user already exist?
   User.find({username: username}, function(err, data) {
     if (err) throw err;
     if (data.length < 1) { //user does not exist
       var newUser = new User({username: username}).save().then(function(data) {
-        //res.send("saved");
+        console.log("saved");
+        res.json(data);
       });
     } else { //username taken
       console.log("this user already exists!");
+      res.send("this user already exists!");
     }
   });
-  //console.log("This will be the endpoint for the user creation route.");
+  
 });
 
 app.get('/api/exercise/new-user', function(req, res) {

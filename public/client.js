@@ -3,19 +3,23 @@
 
 $(document).ready(function() {
   
-  $("#new-user").on("submit", function(e) {
+  $("#new-user").on("submit", function() {
     
-    //e.preventDefault();
+    var item = $('#new-user input');
+    var data = item.val();
     
-    var data = $("#new-user").serializeArray()[0].value;
-    
+    //var data = $("#new-user").serializeArray()[0].value;
+
     $.ajax({
-      type: "POST",
-      url: "/api/exercise/new-user",
-      data: data
+      type: 'POST',
+      url: '/api/exercise/new-user',
+      data: data,
+      dataType: "text",
+      success: function(data) {console.log("success!");},
+      error: function(err) {console.log(err);}
     });
     
-    //return false;
+    return false;
     
   });
   
