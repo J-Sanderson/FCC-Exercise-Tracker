@@ -49,8 +49,18 @@
     
     <hr>
     
+    <form id="get-log" method="GET" action="/api/exercise/log">
+      <input type="text" name="userid" placeholder="User ID" required />
+      From: <input type="date" name="date-from" />
+      To:  <input type="date" name="date-to" />
+      Limit number of results: <input type="number" name="limit" min="1" />
+      <button type="submit">
+        Get user log
+      </button>
+    </form>
+    
     <p>
-      <a href="/api/exercise/log">Test link to log endpoint</a>
+      <a href="/api/exercise/log">Example user log</a> - format of GET requests if you want to write your own?
     </p>
 
   </body>
