@@ -19,8 +19,8 @@
     <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="/style.css">
     <!-- import the webpage's client-side javascript file -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="/client.js" defer></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/client.js" defer></script> -->
   </head>
   <body>
     
@@ -28,7 +28,7 @@
       FCC Exercise Tracker
     </h1>
     
-    <form id="new-user">
+    <form id="new-user" method="POST" action="/api/exercise/new-user">
       <input type="text" name="username" placeholder="Username" required />
       <button type="submit">
         Create new user

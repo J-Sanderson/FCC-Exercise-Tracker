@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-var shortid = require('shortid');
+//var shortid = require('shortid');
 
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
@@ -11,10 +11,12 @@ var urlencodedParser = bodyParser.urlencoded({extended: false});
 mongoose.connect(process.env.DB, { useNewUrlParser: true });
 
 var userSchema = new mongoose.Schema({
+  /*
   _id: {
     'type': String,
     'default': shortid.generate
   },
+  */
   username: String
 });
 var User = mongoose.model('User', userSchema);
@@ -32,26 +34,18 @@ app.get('/api/exercise/log', function(req, res) {
 })
 
 app.post('/api/exercise/new-user', urlencodedParser, function(req, res, next) {
-  
-  var username = Object.keys(req.body)[0];
+  var username = req.body.username;
   //does the user already exist?
-  User.find({username: username}, function(err, data) {
+  User.find({username: username,}, function(err, data) {
     if (err) throw err;
     if (data.length < 1) { //user does not exist
-      var newUser = new User({username: username}).save().then(function(data) {
-        console.log("saved");
-        res.json(data);
+      var newUser = new User({username: username,}).save().then(function(data) {
+        res.json({username: data.username, id: data._id});
       });
     } else { //username taken
-      console.log("this user already exists!");
       res.send("this user already exists!");
     }
   });
-  
-});
-
-app.get('/api/exercise/new-user', function(req, res) {
-  console.log("test get request");
 });
 
 app.post('/api/exercise/add', function(req, res) {
