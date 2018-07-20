@@ -21,6 +21,14 @@ var userSchema = new mongoose.Schema({
 });
 var User = mongoose.model('User', userSchema);
 
+var exerciseSchema = new mongoose.Schema({
+  userid: String,
+  description: String,
+  duration: Number,
+  date: Date
+});
+var Exercise = mongoose.model('Exercise', exerciseSchema);
+
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
@@ -48,8 +56,37 @@ app.post('/api/exercise/new-user', urlencodedParser, function(req, res, next) {
   });
 });
 
-app.post('/api/exercise/add', function(req, res) {
-  console.log("This will be the endpoint for the exercise logging route");
+//{"username":"test","id":"5b51beb1caddbe12dadef7c2"}
+app.post('/api/exercise/add', urlencodedParser, function(req, res) {
+  //search for user
+  User.findById(req.body.userid, function(err, person) {
+    if (err) {
+      res.send("User ID does not exist.");
+    } else {
+      //parse date
+      var date;
+      if (req.body.date === '') {
+        date = new Date(); //date not given, default to now
+      } else { 
+        date = new Date(req.body.date); //date given, parse
+      }
+      //create exercise
+      var newExercise = new Exercise({
+        userid: req.body.userid,
+        description: req.body.description,
+        duration: parseInt(req.body.duration),
+        date: date
+      }).save().then(function(data) {
+        res.json({
+          username: person.username,
+          description: data.description,
+          duration: data.duration,
+          id: person._id,
+          date: data.date.toDateString()
+        });
+      });
+    }
+  });
 });
 
 // listen for requests :)

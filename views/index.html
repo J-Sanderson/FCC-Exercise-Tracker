@@ -37,11 +37,11 @@
     
     <hr>
     
-    <form id="add-exercise">
+    <form id="add-exercise" method="POST" action="/api/exercise/add">
       <input type="text" name="userid" placeholder="User ID" required />
       <input type="text" name="description" placeholder="Description" required />
-      <input type="text" name="duration" placeholder="Duration (mins)" required />
-      <input type="text" name="date" placeholder="Date (yyyy-mm-dd)" />
+      <input type="number" name="duration" placeholder="Duration (mins)" min="1" required />
+      <input type="date" name="date" />
       <button type="submit">
         Log exercise
       </button>
