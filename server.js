@@ -37,9 +37,41 @@ app.get('/', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
-app.get('/api/exercise/log', function(req, res) {
-  res.send("This will be the endpoint for the exercise log.");
-})
+app.get('/api/exercise/log', function(req, res, next) {
+  console.log(req.query);
+  //does this user exist?
+  User.findById(req.query.userid, function(err, person) {
+    if (err) {
+      //user does not exist
+      res.send("User ID does not exist.");
+    } else {
+      //search for all exercises attributed to this person
+      Exercise.find({userid: person._id}, function(err, data) {
+        if (err) throw err;
+        if (data.length < 1) {
+          res.send("This user has no exercises logged yet!");
+        } else {
+          //create readable log
+          var log = []
+          data.forEach(function(item) {
+            log.push({
+              description: item.description,
+              duration: item.duration,
+              date: item.date.toDateString()
+            });
+          });
+          //send
+          res.json({
+            userid: person._id,
+            username: person.username,
+            count: data.length,
+            log: log
+          });
+        }
+      }); //Exercise.find()
+    }
+  }); //User.findById()
+}) //GET
 
 app.post('/api/exercise/new-user', urlencodedParser, function(req, res, next) {
   var username = req.body.username;
@@ -57,7 +89,7 @@ app.post('/api/exercise/new-user', urlencodedParser, function(req, res, next) {
 });
 
 //{"username":"test","id":"5b51beb1caddbe12dadef7c2"}
-app.post('/api/exercise/add', urlencodedParser, function(req, res) {
+app.post('/api/exercise/add', urlencodedParser, function(req, res, next) {
   //search for user
   User.findById(req.body.userid, function(err, person) {
     if (err) {
@@ -84,7 +116,7 @@ app.post('/api/exercise/add', urlencodedParser, function(req, res) {
           id: person._id,
           date: data.date.toDateString()
         });
-      });
+      }); //new Exercise.then()
     }
   });
 });
